@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>六一儿童节 · 祝福贺卡</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: #1a0533;
+    cursor: default;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  canvas { position: fixed; top: 0; left: 0; z-index: 0; }
+
+  /* ===== 贺卡主体 ===== */
+  .card {
+    position: fixed;
+    z-index: 10;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    width: min(520px, 90vw);
+    background: linear-gradient(160deg, rgba(255,255,255,0.12), rgba(255,255,255,0.05));
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 28px;
+    padding: 40px 32px 32px;
+    text-align: center;
+    animation: cardIn 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.8s forwards;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+  @keyframes cardIn {
+    0%   { transform: translate(-50%, -50%) scale(0) rotate(-10deg); opacity: 0; }
+    100% { transform: translate(-50%, -50%) scale(1) rotate(0deg);     opacity: 1; }
+  }
+
+  .card .icon-row { font-size: 48px; margin-bottom: 8px; animation: bounce 2s ease-in-out infinite; }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-10px); }
+  }
+
+  .card h1 {
+    font-size: clamp(26px, 5vw, 38px);
+    font-weight: 900;
+    background: linear-gradient(135deg, #ff6b6b, #feca57, #ff9ff3, #54a0ff, #5f27cd);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: rainbow 3s ease-in-out infinite;
+    margin-bottom: 6px;
+  }
+  @keyframes rainbow {
+    0%, 100% { background-position: 0% 50%; }
+    50%      { background-position: 100% 50%; }
+  }
+
+  .card .date {
+    font-size: 14px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.2em;
+    margin-bottom: 18px;
+  }
+
+  .card .blessing-text {
+    color: rgba(255,255,255,0.85);
+    font-size: 16px;
+    line-height: 2;
+    letter-spacing: 0.05em;
+    margin-bottom: 20px;
+  }
+  .card .blessing-text .highlight {
+    display: inline-block;
+    padding: 2px 10px;
+    background: rgba(255,200,60,0.15);
+    border-radius: 6px;
+    font-weight: 700;
+    color: #feca57;
+  }
+
+  /* ===== 按钮区 ===== */
+  .btn-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+  .btn {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 0.06em;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-blessing {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+    color: #fff;
+  }
+  .btn-blessing:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(255,107,107,0.4);
+  }
+  .btn-blessing:active { transform: scale(0.95); }
+  .btn-share {
+    background: rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.85);
+  }
+  .btn-share:hover {
+    background: rgba(255,255,255,0.2);
+    transform: translateY(-2px);
+  }
+
+  /* ===== 烟花文字弹幕 ===== */
+  .firework-text {
+    position: fixed;
+    z-index: 5;
+    pointer-events: none;
+    font-weight: 700;
+    font-size: 18px;
+    color: #fff;
+    animation: fwUp 3s ease-out forwards;
+    white-space: nowrap;
+    text-shadow: 0 0 12px currentColor;
+  }
+  @keyframes fwUp {
+    0%   { opacity: 1; transform: translateY(0) scale(0.5); }
+    30%  { opacity: 1; transform: translateY(-120px) scale(1.2); }
+    100% { opacity: 0; transform: translateY(-280px) scale(0.6); }
+  }
+
+  /* ===== Toast ===== */
+  .toast {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(12px);
+    color: #fff;
+    padding: 10px 24px;
+    border-radius: 30px;
+    font-size: 14px;
+    z-index: 100;
+    pointer-events: none;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 500px) {
+    .card { padding: 28px 20px 24px; border-radius: 22px; }
+    .card .icon-row { font-size: 36px; }
+    .card .blessing-text { font-size: 14px; line-height: 1.8; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 画布：烟花 + 气球 -->
+<canvas id="canvas"></canvas>
+
+<!-- 贺卡 -->
+<div class="card" id="card">
+  <div class="icon-row">🎈🎂🎈</div>
+  <h1>六 一 快 乐</h1>
+  <div class="date">2026 年 6 月 1 日 · 国际儿童节</div>
+  <div class="blessing-text" id="blessingDisplay">
+    愿你<span class="highlight">眼里有光</span>，<br>
+    愿你<span class="highlight">心中有梦</span>，<br>
+    愿你在成长的路上，<br>
+    永远保留一份<span class="highlight">纯真的快乐</span>。✨
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-blessing" onclick="changeBlessing()">🎁 换一句祝福</button>
+    <button class="btn btn-blessing" onclick="launchFireworks()" style="background:linear-gradient(135deg,#feca57,#ff9f43)">🎆 放烟花</button>
+    <button class="btn btn-share" onclick="shareCard()">📋 复制祝福</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ======================== 烟花画布 ========================
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+let W, H;
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// ===== 烟花粒子 =====
+let fireworks = [];
+
+class FireworkParticle {
+  constructor(x, y, color) {
+    this.x = x;
+    this.y = y;
+    const angle = Math.random() * Math.PI * 2;
+    const speed = Math.random() * 6 + 3;
+    this.vx = Math.cos(angle) * speed;
+    this.vy = Math.sin(angle) * speed;
+    this.color = color;
+    this.life = 1;
+    this.decay = Math.random() * 0.015 + 0.008;
+    this.r = Math.random() * 3 + 1.5;
+    this.gravity = 0.04;
+    this.friction = 0.98;
+  }
+
+  update(dt) {
+    this.vx *= this.friction;
+    this.vy *= this.friction;
+    this.vy += this.gravity;
+    this.x += this.vx * dt;
+    this.y += this.vy * dt;
+    this.life -= this.decay * dt;
+  }
+
+  draw(ctx) {
+    if (this.life <= 0) return;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r * this.life, 0, Math.PI * 2);
+    ctx.fillStyle = this.color.replace('1)', `${this.life})`).replace('rgb', 'rgba');
+    ctx.shadowColor = this.color.replace('1)', `${this.life * 0.6})`).replace('rgb', 'rgba');
+    ctx.shadowBlur = this.r * 3;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+}
+
+function explode(x, y) {
+  const colors = [
+    'rgb(255,107,107)', 'rgb(254,202,87)', 'rgb(255,159,243)',
+    'rgb(84,160,255)', 'rgb(95,39,205)', 'rgb(46,213,115)',
+    'rgb(255,159,67)', 'rgb(255,234,167)', 'rgb(0,210,211)',
+  ];
+  const color = colors[Math.floor(Math.random() * colors.length)];
+  const count = Math.floor(Math.random() * 40) + 50;
+  for (let i = 0; i < count; i++) {
+    fireworks.push(new FireworkParticle(x, y, color));
+  }
+}
+
+function launchFireworks() {
+  for (let i = 0; i < 5; i++) {
+    setTimeout(() => {
+      const x = W * (0.15 + Math.random() * 0.7);
+      const y = H * (0.15 + Math.random() * 0.5);
+      explode(x, y);
+    }, i * 200);
+  }
+}
+
+// ===== 漂浮气球 =====
+let balloons = [];
+
+function createBalloon(x) {
+  const colors = ['#ff6b6b','#feca57','#ff9ff3','#54a0ff','#5f27cd','#2ed573','#ff9f43','#00d2d3'];
+  return {
+    x: x ?? Math.random() * W,
+    y: H + 60,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    size: Math.random() * 22 + 26,
+    speed: Math.random() * 0.6 + 0.4,
+    sway: Math.random() * Math.PI * 2,
+    swaySpeed: Math.random() * 0.02 + 0.01,
+    swayAmp: Math.random() * 0.8 + 0.3,
+    alpha: Math.random() * 0.3 + 0.6,
+  };
+}
+
+// 初始气球
+for (let i = 0; i < 12; i++) {
+  const b = createBalloon();
+  b.y = Math.random() * H; // 散布在画面中
+  balloons.push(b);
+}
+
+function drawBalloon(b, dt) {
+  b.y -= b.speed * dt;
+  b.sway += b.swaySpeed * dt;
+  const sx = Math.sin(b.sway) * b.swayAmp;
+  const x = b.x + sx;
+  const y = b.y;
+  const s = b.size;
+
+  if (y < -80) {
+    b.y = H + 60;
+    b.x = Math.random() * W;
+  }
+
+  ctx.save();
+  ctx.globalAlpha = b.alpha;
+
+  // 气球绳
+  ctx.beginPath();
+  ctx.moveTo(x, y + s * 0.85);
+  ctx.quadraticCurveTo(x + 2, y + s * 1.2, x + 6, y + s * 1.5);
+  ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+  ctx.lineWidth = 0.8;
+  ctx.stroke();
+
+  // 气球主体
+  const grad = ctx.createRadialGradient(x - s*0.15, y - s*0.2, s*0.1, x, y, s*0.55);
+  grad.addColorStop(0, 'rgba(255,255,255,0.4)');
+  grad.addColorStop(0.5, b.color);
+  grad.addColorStop(1, 'rgba(0,0,0,0.15)');
+
+  ctx.beginPath();
+  ctx.ellipse(x, y, s * 0.42, s * 0.55, 0, 0, Math.PI * 2);
+  ctx.fillStyle = grad;
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+  ctx.lineWidth = 0.5;
+  ctx.stroke();
+
+  // 气球结
+  ctx.beginPath();
+  ctx.moveTo(x - 4, y + s * 0.5);
+  ctx.lineTo(x, y + s * 0.58);
+  ctx.lineTo(x + 4, y + s * 0.5);
+  ctx.fillStyle = b.color;
+  ctx.fill();
+
+  ctx.restore();
+}
+
+// ===== 背景星星粒子 =====
+let bgStars = [];
+function createBgStars() {
+  bgStars = [];
+  for (let i = 0; i < 100; i++) {
+    bgStars.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      r: Math.random() * 1.5 + 0.3,
+      twinkle: Math.random() * Math.PI * 2,
+      speed: Math.random() * 0.015 + 0.005,
+    });
+  }
+}
+createBgStars();
+window.addEventListener('resize', createBgStars);
+
+// ===== 主动画循环 =====
+let lastTime = performance.now();
+
+function animate(now) {
+  const dt = Math.min((now - lastTime) / 16.67, 3);
+  lastTime = now;
+
+  // 背景
+  const bgGrad = ctx.createRadialGradient(W/2, H*0.4, 0, W/2, H/2, Math.max(W, H));
+  bgGrad.addColorStop(0, '#2d1050');
+  bgGrad.addColorStop(0.5, '#1a0533');
+  bgGrad.addColorStop(1, '#0a0218');
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  // 背景星星
+  for (const s of bgStars) {
+    s.twinkle += s.speed * dt;
+    const alpha = 0.3 + Math.sin(s.twinkle) * 0.3;
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,255,255,${Math.max(0.05, alpha)})`;
+    ctx.fill();
+  }
+
+  // 气球
+  for (const b of balloons) drawBalloon(b, dt);
+
+  // 烟花粒子
+  for (let i = fireworks.length - 1; i >= 0; i--) {
+    fireworks[i].update(dt);
+    fireworks[i].draw(ctx);
+    if (fireworks[i].life <= 0) fireworks.splice(i, 1);
+  }
+
+  requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
+
+// ===== 祝福语库 =====
+const blessings = [
+  '愿你<span class="highlight">眼里有光</span>，<br>愿你<span class="highlight">心中有梦</span>，<br>愿你在成长的路上，<br>永远保留一份<span class="highlight">纯真的快乐</span>。✨',
+  '小时候总盼着长大，<br>长大后才发现，<br><span class="highlight">童年</span>是回不去的<span class="highlight">宝藏</span>。<br>今天，做一天小朋友吧！🍭',
+  '愿你走过山川湖海，<br>依然记得<span class="highlight">第一次吃糖的甜</span>；<br>愿你历经世间冷暖，<br>依然保有<span class="highlight">相信童话的勇气</span>。🌟',
+  '不管几岁，<br><span class="highlight">好奇心</span>万岁！<br>保持对世界的惊奇，<br>就是最好的<span class="highlight">童心未泯</span>。🔍',
+  '送你一朵<span class="highlight">小红花</span>，<br>奖励你这些年的<span class="highlight">勇敢和坚持</span>。<br>曾经那个哭鼻子的小孩，<br>已经长成了不起的大人啦。🌺',
+  '世界很大，<br>但<span class="highlight">快乐很小</span>——<br>可能是一支冰淇淋，<br>可能是一句"你真棒"。<br>六一快乐，做自己的小朋友。🍦',
+  '愿你的生活像<span class="highlight">彩虹糖</span>，<br>每一颗都是<span class="highlight">不同的惊喜</span>；<br>愿你的未来像<span class="highlight">万花筒</span>，<br>每一次转动都<span class="highlight">绚烂无比</span>。🌈',
+  '所有的大人都曾经是小孩，<br>虽然只有少数人记得。<br>今天，请记得——<br>你<span class="highlight">值得被宠爱</span>，你<span class="highlight">永远是宝贝</span>。💝',
+];
+
+let blessIdx = 0;
+
+function changeBlessing() {
+  blessIdx = (blessIdx + 1) % blessings.length;
+  document.getElementById('blessingDisplay').innerHTML = blessings[blessIdx];
+
+  // 小烟花
+  const cx = W * (0.3 + Math.random() * 0.4);
+  const cy = H * (0.3 + Math.random() * 0.3);
+  explode(cx, cy);
+
+  // 弹幕
+  spawnFireworkText('🎁 ' + ['六一快乐！','永远开心！','童心未泯！','你最棒！','要幸福哦！'][Math.floor(Math.random()*5)]);
+}
+
+// ===== 弹幕文字 =====
+function spawnFireworkText(text) {
+  const el = document.createElement('div');
+  el.className = 'firework-text';
+  el.textContent = text;
+  el.style.left = (10 + Math.random() * 70) + '%';
+  el.style.top = (40 + Math.random() * 40) + '%';
+  el.style.color = ['#ff6b6b','#feca57','#ff9ff3','#54a0ff','#2ed573','#ff9f43'][Math.floor(Math.random()*6)];
+  el.style.fontSize = (16 + Math.random() * 20) + 'px';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+// ===== 复制祝福 =====
+function shareCard() {
+  const text = document.getElementById('blessingDisplay').innerText;
+  navigator.clipboard.writeText(text + '\n\n—— 六一儿童节快乐！🎈').then(() => {
+    showToast('✅ 祝福已复制，分享给朋友吧~');
+  }).catch(() => {
+    showToast('📋 ' + text.slice(0, 20) + '...');
+  });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timeout);
+  t._timeout = setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ===== 点击空白处放烟花 =====
+canvas.addEventListener('click', (e) => {
+  // 排除贺卡区域
+  const card = document.getElementById('card');
+  const rect = card.getBoundingClientRect();
+  if (e.clientX >= rect.left && e.clientX <= rect.right &&
+      e.clientY >= rect.top && e.clientY <= rect.bottom) return;
+  explode(e.clientX, e.clientY);
+  spawnFireworkText(['✨','🌟','💫','🎈','🍬','🎀','💝','🌈'][Math.floor(Math.random()*8)]);
+});
+
+// ===== 初始动画 =====
+setTimeout(launchFireworks, 1200);
+setTimeout(() => spawnFireworkText('🎈 六一快乐 🎈'), 600);
+setTimeout(() => spawnFireworkText('🌟 童心未泯 🌟'), 900);
+
+// ===== 持续生成气球 =====
+setInterval(() => {
+  if (balloons.length < 20) {
+    balloons.push(createBalloon());
+  }
+}, 2500);
+
+console.log('%c🎈 六一儿童节快乐！%c 点击夜空放烟花，点击按钮换祝福~',
+  'font-size:18px;color:#feca57', 'font-size:13px;color:#aaa');
+</script>
+</body>
+</html>
