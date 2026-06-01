@@ -433,14 +433,34 @@ requestAnimationFrame(animate);
 
 // ===== 名字更新 =====
 function updateName() {
-  const name = document.getElementById('nameInput').value.trim();
+  const nameInput = document.getElementById('nameInput');
+  const name = nameInput.value.trim();
   const title = document.getElementById('titleText');
   if (name) {
     title.innerHTML = name + ' 六 一 快 乐';
   } else {
     title.innerHTML = '六 一 快 乐';
   }
+  // 同步更新链接参数
+  const url = new URL(window.location);
+  if (name) {
+    url.searchParams.set('name', name);
+  } else {
+    url.searchParams.delete('name');
+  }
+  window.history.replaceState({}, '', url);
 }
+
+// 页面加载时读取链接里的名字
+(function initName() {
+  const params = new URL(window.location).searchParams;
+  const nameFromUrl = params.get('name');
+  if (nameFromUrl) {
+    const nameInput = document.getElementById('nameInput');
+    nameInput.value = nameFromUrl;
+    updateName();
+  }
+})();
 
 // ===== 祝福语库 =====
 const blessings = [
