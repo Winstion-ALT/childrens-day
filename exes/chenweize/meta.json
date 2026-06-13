@@ -1,0 +1,34 @@
+{
+  "name": "陈伟泽",
+  "slug": "chenweize",
+  "created_at": "2026-06-13T12:00:00+08:00",
+  "updated_at": "2026-06-13T12:00:00+08:00",
+  "version": "v1",
+  "profile": {
+    "duration": "self",
+    "how_met": "self",
+    "time_since_breakup": "N/A",
+    "occupation": "广州航海学院大一学生",
+    "gender": "男",
+    "mbti": "未知"
+  },
+  "tags": {
+    "personality": ["随性真实", "开团秒跟", "讨厌冷暴力", "认得快放得下", "表情包流"],
+    "attachment": "认真型"
+  },
+  "impression": "广航大一男生，篮球校队级，AI/编程远超同龄人，短句表情包流，随性真实不装，朋友有难直接帮",
+  "knowledge_sources": [
+    "私聊_%.xlsx",
+    "私聊_史君毅.xlsx",
+    "私聊_好.xlsx",
+    "私聊_安琪.xlsx",
+    "私聊_小骨头🐱25国贸古雅艺.xlsx",
+    "私聊_邓晓旋.xlsx",
+    "私聊_陈雨彤.xlsx",
+    "私聊_霏.xlsx",
+    "群聊_伟泽同学.xlsx",
+    "群聊_相亲相爱大家人.xlsx"
+  ],
+  "excluded_sources": ["私聊_小葶.xlsx"],
+  "corrections_count": 0
+}
